@@ -16,6 +16,24 @@ def new_window(Title):
     window.geometry("400x400")
     return window
 
+#if the var_name.get() == 0 restart the root & TopLevel windows (bug fixed)
+def null_get(variable, TopLevel_window, function):
+    if variable.get() == 0 : 
+        
+        #destroying the main window 
+        root.destroy()
+        
+        #recreating the window 
+        root = tk.Tk()
+        root.geometry("400x400")
+        root.title("Menu page")
+        
+        TopLevel_window.destroy()
+        
+        #Calling the function that create the top level window 
+        function()
+        return root , TopLevel_window
+
 def edit():
     
     global window
@@ -86,6 +104,7 @@ def delete():
 def deleteSubmit():
     
     global window
+
     index = int(entry_delete.get()) - 1
 
     del num_list[index]
@@ -106,23 +125,27 @@ def showAll():
 
 def search():
     global entry_search
-    global window
-    window = new_window("Search window")
-    entry_search = tk.Entry(window)
+    global window_search
+    window_search = new_window("Search window")
+    entry_search = tk.Entry(window_search)
     entry_search.pack()
-    search_submit_button = tk.Button(window ,text="Start searching " , command=searchSubmit)
+    search_submit_button = tk.Button(window_search ,text="Start searching " , command=searchSubmit)
     search_submit_button.pack()
 
 def searchSubmit():
     
+
     window = new_window("Search window")
     text = tk.Text(window)
     boolean = False
+    
+    null_get(searchIn_menu_var , window , search)
+    
     if searchIn_menu_var.get() == "Num":
         for i in range(len(num_list)):
             if entry_search.get() == num_list[i]:
                 boolean = True
-                text.insert(tk.END , f"{num_list}\n")
+                text.insert(tk.END , f"{i} | Num.{num_list[i]} | Name : {name_list[i]} | Nickname :{nickname_list[i]} \n")
                 text.insert(tk.END , "---------------------------------")
                                 
     elif searchIn_menu_var.get() == "Name":
@@ -149,12 +172,15 @@ def searchSubmit():
         text.insert(tk.END , "Error : No element found :( ! ")   
      
     text.configure(state=DISABLED)
-    text.pack()     
+    text.pack() 
+    window_search.destroy()    
     
 def sortBy():
     
     window = new_window("sort window")
     text = tk.Text(window)
+    
+    null_get(sort_menu_var, window , sortBy)
     
     if sort_menu_var.get() == "Num":
         for i in range(len(num_list)):
