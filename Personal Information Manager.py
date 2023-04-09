@@ -10,6 +10,8 @@ num_list = []
 name_list = []
 nickname_list = []
 
+
+
 def new_window(Title):
     window = tk.Toplevel()
     window.title(Title)
@@ -34,6 +36,7 @@ def null_get(variable, TopLevel_window, function):
         function()
         return root , TopLevel_window
 
+
 def edit():
     
     global window
@@ -43,7 +46,7 @@ def edit():
     global entry_edit_num
     
     window = new_window("Edit window")
-    label_entry = tk.Label(window , text="Enter the index of 'first index = 1' : ")
+    label_entry = tk.Label(window , text="I want to edit the element number : ")
     label_entry.pack()
     
     #the index to edit starts from 1 to max length
@@ -73,37 +76,56 @@ def edit():
 def editSubmit():
     
     global window
+    
+
     index = int(entry_edit.get()) - 1
     new_num = entry_edit_num.get()
     new_name = entry_edit_name.get()
     new_nickname = entry_edit_nickname.get()
 
-    num_list[index] = new_num
-    name_list[index] = new_name
-    nickname_list[index] = new_nickname
-    messagebox.showinfo("Successfully", "The informations were successfully edited !")
-    window.destroy()
+    
+    if len(num_list) > index and index >= 0 :
+        print(index)
+        print(len(num_list))
+        num_list[index] = new_num
+        name_list[index] = new_name
+        nickname_list[index] = new_nickname
+        messagebox.showinfo("Successfully", "The informations were successfully edited !")
+        window.destroy()
+        showAll()
+
+    elif index == -1 :
+        messagebox.showinfo("Error 404" , "Indexes start from 1 !")
+        window.destroy()
+
+    else:
+        messagebox.showinfo("Error 404" , f"Index out of range : \n      Please check if the index is correct. ")
+        print(index)
+        print(len(num_list))
+        window.destroy()
+
+        
 
 def delete():
     
-    global window
+    global window_delete
     global entry_delete
     
-    window = new_window("Delete window")
-    label_entry = tk.Label(window , text="Enter the index of 'first index = 1' : ")
+    window_delete = new_window("Delete window")
+    label_entry = tk.Label(window_delete , text="Enter the index of 'first index = 1' : ")
     label_entry.pack()
     
     #the index to deete starts from 1 to max length
-    entry_delete = tk.Entry(window)
+    entry_delete = tk.Entry(window_delete)
     entry_delete.pack()
     
     #submit button
-    delete_submit_button = tk.Button(window ,text="Start Deleting" , command=deleteSubmit)
+    delete_submit_button = tk.Button(window_delete ,text="Start Deleting" , command=deleteSubmit)
     delete_submit_button.pack()
     
 def deleteSubmit():
     
-    global window
+    global window_delete
 
     index = int(entry_delete.get()) - 1
 
@@ -111,15 +133,20 @@ def deleteSubmit():
     del name_list[index]
     del nickname_list[index]
     messagebox.showinfo("Successfully", "The ELement was successfully Deleted !")
-    window.destroy()
+    window_delete.destroy()
     
 def showAll():
-
-    window = new_window("Show All window")
-    text = tk.Text(window)
-    for i in range(len(num_list)):
-        text.insert(tk.END , f"{i} | Num.{num_list[i]} | Name : {name_list[i]} | Nickname :{nickname_list[i]} \n")
-        text.insert(tk.END , "-------------------------------------------------")
+    
+    global window_show
+    
+    window_show = new_window("Show All window")
+    text = tk.Text(window_show)
+    if len(num_list) != 0:
+        for i in range(len(num_list)):
+            text.insert(tk.END , f"{i} | Num.{num_list[i]} | Name : {name_list[i]} | Nickname :{nickname_list[i]} \n")
+            text.insert(tk.END , "-------------------------------------------------")
+    else : 
+        text.insert(tk.END , "Error : No element found :( ! ")   
     text.configure(state=DISABLED)
     text.pack()
 
@@ -134,12 +161,11 @@ def search():
 
 def searchSubmit():
     
-
-    window = new_window("Search window")
-    text = tk.Text(window)
+    window_search_result = new_window("Search window")
+    text = tk.Text(window_search_result)
     boolean = False
     
-    null_get(searchIn_menu_var , window , search)
+    null_get(searchIn_menu_var , window_search_result , search)
     
     if searchIn_menu_var.get() == "Num":
         for i in range(len(num_list)):
@@ -177,23 +203,35 @@ def searchSubmit():
     
 def sortBy():
     
-    window = new_window("sort window")
-    text = tk.Text(window)
+    window_sort = new_window("sort window")
+    text = tk.Text(window_sort)
     
-    null_get(sort_menu_var, window , sortBy)
+    null_get(sort_menu_var, window_sort , sortBy)
     
     if sort_menu_var.get() == "Num":
+        text.insert(tk.END , f"{sort_menu_var.get()} : \n")
+        text.insert(tk.END , f"----------------------------------------\n")
+        text.insert(tk.END , f"\n")
+        
         for i in range(len(num_list)):
             text.insert(tk.END , f"{num_list[i]}\n")
             text.insert(tk.END , "-------------------------------------------------")
 
             
     elif sort_menu_var.get() == "Name":
+        text.insert(tk.END , f"{sort_menu_var.get()} : \n")
+        text.insert(tk.END , f"----------------------------------------\n")
+        text.insert(tk.END , f"\n")
+        
         for i in range(len(name_list)):
             text.insert(tk.END , f"{name_list[i]}\n")
             text.insert(tk.END , "-------------------------------------------------")
 
     else :
+        text.insert(tk.END , f"{sort_menu_var.get()} : \n")
+        text.insert(tk.END , f"----------------------------------------\n")
+        text.insert(tk.END , f"\n")
+        
         for i in range(len(nickname_list)):
             text.insert(tk.END , f"{nickname_list[i]}\n")
             text.insert(tk.END , "-------------------------------------------------")
@@ -203,23 +241,23 @@ def sortBy():
     
 def addNew():
     
-    global window
+    global window_add
     global num_Entry
     global name_Entry
     global nickname_Entry
     
-    window = new_window("Add Window")
+    window_add = new_window("Add Window")
 
-    num_label = tk.Label(window , text="Num")
-    num_Entry = tk.Entry(window,)
+    num_label = tk.Label(window_add , text="Num")
+    num_Entry = tk.Entry(window_add)
 
-    name_label = tk.Label(window , text="Name")
-    name_Entry = tk.Entry(window)
+    name_label = tk.Label(window_add , text="Name")
+    name_Entry = tk.Entry(window_add)
 
-    nickname_label = tk.Label(window , text="Nickname")
-    nickname_Entry = tk.Entry(window)
+    nickname_label = tk.Label(window_add , text="Nickname")
+    nickname_Entry = tk.Entry(window_add)
 
-    add_button = tk.Button(window , text="Add",command=addToList)
+    add_button = tk.Button(window_add , text="Add",command=addToList)
 
     num_label.pack()
     num_Entry.pack()
@@ -241,10 +279,10 @@ def addToList():
         name_list.append(name)
         nickname_list.append(nickname)
         
-        window.destroy()
+        window_add.destroy()
         messagebox.showinfo("Successfully", "The informations were successfully added !")
     else:
-        messagebox.showinfo("Error" , "Error : Invalid data")
+        messagebox.showinfo("Error" , "Error : Invalid data")        
 
 #creation of the menu 
 menu = tk.Menu(root)
